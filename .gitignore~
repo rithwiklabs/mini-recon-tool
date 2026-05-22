@@ -1,5 +1,0 @@
-reports/*
-logs/*
-
-!reports/.gitkeep
-!logs/.gitkeep
