@@ -1,17 +1,30 @@
 #!/bin/bash
 
+# COLORS
+BOLD='\033[1m'
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+CYAN='\033[1;36m'
+MAGENTA='\033[1;35m'
+NC='\033[0m'
+
 show_banner()
 {
-	echo
-	echo "=========================="
-    	echo "     MINI RECON TOOL      "
-    	echo "=========================="
-
-    	echo "1. Ping Target"
-    	echo "2. DNS Lookup"
-    	echo "3. Whois Lookup"
-    	echo "4. Port Scan"
-    	echo "5. Exit"
+	sleep 0.3
+	echo -e "${CYAN}"
+	echo -e  "${BLUE}==========================${NC}"
+    	echo -e  "     ${BOLD}${CYAN}MINI RECON TOOL   ${NC}"
+    	echo -e  "${BLUE}==========================${NC}"
+	echo -e "${NC}"
+    	echo -e "${GREEN}[1]${NC} Ping Target"
+    	echo -e "${GREEN}[2]${NC} DNS Lookup"
+    	echo -e "${GREEN}[3]${NC} Whois Lookup"
+    	echo -e "${GREEN}[4]${NC} Port Scan"
+    	echo -e "${GREEN}[5]${NC} Exit"
+    	
+    	echo
 }
 	
 log_header()
@@ -40,26 +53,27 @@ validate_target()
 section_header()
 {
     	echo
-    	echo "===================================="
-    	echo "        $1"
-    	echo "===================================="
+    	echo -e "${BLUE}====================================${NC}"
+    	echo -e "${YELLOW}        $1${NC}"
+    	echo -e "${BLUE}====================================${NC}"
     	echo
 }
 
 show_summary()
 {
     	echo
-    	echo "=========================="
-    	echo " Scan Completed Successfully "
-    	echo "=========================="
-    	echo "Target : $1"
-    	echo "Time   : $(date +"%Y-%m-%d %H:%M:%S")"
+    	echo -e  "${BLUE}==========================${NC}"
+    	echo -e "${GREEN}Scan Completed Successfully${NC} "
+    	echo -e  "${BLUE}==========================${NC}"
+    	echo -e "${CYAN}Target : $1${NC}"
+    	echo -e "${CYAN}Time   : $(date +"%Y-%m-%d %H:%M:%S")${NC}"
+    	echo -e  "${BLUE}==========================${NC}"
     	echo
 }
 
 loading()
 {
-    	echo -n "Processing"
+    	echo -ne "${MAGENTA}Processing${NC}"
 
     	for i in 1 2 3
     	do
@@ -70,9 +84,41 @@ loading()
     	echo
 }
 
+check_tools()
+{
+	missing_tools=()
+	tools=("nmap" "whois" "host")
+
+	for tool in "${tools[@]}"
+	do
+		if ! command -v "$tool" &> /dev/null
+		then
+			missing_tools+=("$tool")
+		fi
+	done
+	if [ ${#missing_tools[@]} -ne 0 ]
+	then
+		echo
+		echo -e "${RED}[-] Missing Required Tools :${NC}"
+		for missing in "${missing_tools[@]}"
+		do 
+			echo -e "${YELLOW} ---> $missing${NC}"
+		done
+		
+		echo
+		echo -e "${CYAN}Install them using :${NC}"
+		echo "sudo apt install ${missing_tools[*]}"
+		
+		exit 1
+	fi
+}
+
+check_tools
+echo -e "${GREEN}[+] All Required Tools Found${NC}"
+sleep 1
 while true
 do
-    	show_banner
+	show_banner
 
     	echo
     	read -p "Enter your choice : " ch
@@ -87,17 +133,17 @@ do
                 		log_header
                 		echo
                 		section_header "PING RESULTS"
-                		echo "Pinging $tg ..."
+                		echo -e "${YELLOW}[*] Pinging $tg ...${NC}"
                 		loading
                 		echo
                 		ping -c 4 $tg | tee -a $report
                 		echo
                 		write_log "Ping scan performed on $tg."
-                		echo "Report saved to $report"
+                		echo -e "${GREEN}[+] Report saved to $report${NC}"
                 		show_summary $tg
             	else
                 		echo
-                		echo "Target unreachable or invalid!"
+                		echo -e "${RED}[-] Target unreachable or invalid!${NC}"
             	fi
             	;;
 
@@ -110,17 +156,17 @@ do
                 		log_header
                 		echo
                 		section_header "DNS RESULT"              
-                		echo "Fetching DNS info for $domain ..."
+                		echo -e "${YELLOW}[*] Fetching DNS info for $domain ...${NC}"
                 		loading
                 		echo
                 		host $domain | tee -a $report
                 		echo
                 		write_log "DNS lookup performed on $domain."
-                		echo "Report saved to $report"
+                		echo -e "${GREEN}[+] Report saved to $report${NC}"
                 		show_summary $domain
             	else
                 		echo
-                		echo "Invalid or unreachable domain!"
+                		echo -e "${RED}[-] Invalid or unreachable domain!${NC}"
             	fi
             	;;
 
@@ -133,17 +179,17 @@ do
 	                	log_header
                 		echo
                 		section_header "WHOIS RESULTS"
-                		echo "Fetching Whois info for $domain ..."
+                		echo -e "${YELLOW}[*] Fetching Whois info for $domain ...${NC}"
                 		loading
                 		echo
                 		whois $domain | grep -E "Registrar:|Creation Date:|Registry Expiry Date:|Name Server:" | tee -a $report
                 		write_log "Whois lookup performed on $domain."
 	                	echo
-	                	echo "Report saved to $report"
+	                	echo -e "${GREEN}[+] Report saved to $report${NC}"
 	                	show_summary $domain
 	            else
                 		echo
-                		echo "Invalid or unreachable domain!"
+                		echo -e "${RED}[-] Invalid or unreachable domain!${NC}"
             	fi
             	;;
 
@@ -156,29 +202,29 @@ do
 	                	log_header
 	                	echo
 	                	section_header "PORT SCAN RESULTS"
-                		echo "Scanning open ports on $tg ..."
+                		echo -e "${YELLOW}[*] Scanning open ports on $tg ...${NC}"
                 		loading
                 		echo
                 		nmap $tg | tee -a $report
                 		echo
                 		write_log "Port Scan performed on $tg."
-                		echo "Report saved to $report"
+                		echo -e "${GREEN}[+] Report saved to $report${NC}"
                 		show_summary $tg
             	else
                 		echo
-                		echo "Target unreachable or invalid!"
+                		echo -e "${RED}[-] Target unreachable or invalid!${NC}"
             	fi
             	;;
 
         	5)
             	echo
-            	echo "Exiting Mini Recon Tool..."
+            	echo -e "${CYAN}Exiting Mini Recon Tool... 😎${NC}"
             	break
             	;;
 
         	*)
             	echo
-            	echo "Invalid Choice!!!"
+            	echo -e "${RED}[-] Invalid Choice!!!${NC}"
             	;;
 
 	esac
