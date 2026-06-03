@@ -56,7 +56,7 @@ sudo apt install nmap whois dnsutils
 
 ---
 
-##Installation
+## Installation
 
 Clone the repository: git clone https://github.com/your-username/recon-tool.git
 
@@ -67,7 +67,7 @@ Give execute permission: chmod +x recon.sh
 Run the tool: ./recon.sh
 ---
 
-##Output
+## Output
 - Scan reports are saved inside the reports/ directory
 - Activity logs are stored in logs/activity.log
 
@@ -86,7 +86,7 @@ This project helps in learning:
 
 ---
 
-##Future Improvements
+## Future Improvements
 
 - Subdomain Enumeration
 - HTTP Header Analysis
