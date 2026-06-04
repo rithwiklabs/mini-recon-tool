@@ -58,7 +58,7 @@ sudo apt install nmap whois dnsutils
 
 ## Installation
 
-Clone the repository: git clone https://github.com/your-username/recon-tool.git
+Clone the repository: git clone https://github.com/rithwiklabs/mini-recon-tool.git
 
 Navigate into the project directory: cd recon-tool
 
